@@ -680,14 +680,12 @@
     const mainContainer = document.getElementById('main-container');
     const numbersRangeLabel = document.getElementById('numbers-range-label');
 
-    // Nuevas variables para los botones de guardar/cargar
     const saveButton = document.getElementById('save-data-button');
     const loadButton = document.getElementById('load-data-button');
     const loadCodeInput = document.getElementById('load-code-input');
     const saveCodeContainer = document.getElementById('save-code-container');
     const savedCodeElement = document.getElementById('saved-code');
 
-    // Audio
     const countdownSound = new Audio('https://www.soundboard.com/mediafiles/3/30018_e2f694931a78c1874249a567634f195d.mp3');
     const spinSound = new Audio('https://www.soundboard.com/mediafiles/1/18167_nfs_prostreet_rev_4.mp3');
     const winnerSound = new Audio('https://www.soundboard.com/mediafiles/6/6389_87900b90e9e46a78280f58a329d91f86.mp3');
@@ -697,6 +695,7 @@
     let assignedNumbers = new Set();
     const MIN_NUMBERS = 100;
     let currentMaxNumber = 99;
+    let currentRaffleCode = null; // Variable para almacenar el código del sorteo cargado
 
     loadData();
 
@@ -1008,6 +1007,9 @@
             selectedNumbers = [];
             allParticipants.length = 0;
             assignedNumbers.clear();
+            currentRaffleCode = null; // Reinicia el código del sorteo
+            loadCodeInput.value = ''; // Borra el código del input
+            saveCodeContainer.style.display = 'none'; // Oculta el contenedor del código
 
             document.querySelectorAll('.number-box').forEach(box => {
                 box.remove();
@@ -1112,24 +1114,25 @@
         }
     }
 
-    // NUEVAS FUNCIONES PARA GUARDAR Y CARGAR CON FIREBASE
     function generateCode() {
         return Math.random().toString(36).substring(2, 8).toUpperCase();
     }
 
     // Función para GUARDAR datos en Firebase
     saveButton.addEventListener('click', async () => {
-        const code = generateCode();
         const data = {
             participants: allParticipants,
             currentMaxNumber: currentMaxNumber
         };
+        const codeToSave = currentRaffleCode || generateCode();
+
         try {
-            await db.collection('sorteos').doc(code).set(data);
+            await db.collection('sorteos').doc(codeToSave).set(data);
             
-            // Muestra el código en la nueva sección
-            savedCodeElement.textContent = code;
+            savedCodeElement.textContent = codeToSave;
             saveCodeContainer.style.display = 'block';
+
+            currentRaffleCode = codeToSave; // Actualiza la variable con el código que se acaba de usar
 
         } catch (e) {
             console.error("Error al guardar el documento: ", e);
@@ -1154,12 +1157,13 @@
                 assignedNumbers.clear();
                 allParticipants.forEach(p => p.numbers.forEach(num => assignedNumbers.add(num)));
 
-                // Limpiar y regenerar la interfaz
                 numbersContainer.innerHTML = '';
                 generateNumberBoxes(0, currentMaxNumber);
                 updateRangeLabel();
                 updateParticipantsList();
                 saveData();
+                
+                currentRaffleCode = code; // Guarda el código cargado
 
                 alert('Sorteo cargado con éxito!');
             } else {
