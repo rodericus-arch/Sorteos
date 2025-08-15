@@ -512,9 +512,72 @@
         .hide-on-edit-mode {
             display: none;
         }
+
+        /* ESTILOS PARA LOS BOTONES DE GUARDAR/CARGAR */
+        #save-data-button { background-color: #6c757d; }
+        #save-data-button:hover { background-color: #5a6268; }
+        #load-data-button { background-color: #17a2b8; }
+        #load-data-button:hover { background-color: #138496; }
+
+        .cosmic-theme #save-data-button { background-color: #663399; }
+        .cosmic-theme #save-data-button:hover { background-color: #5a2c8a; }
+        .cosmic-theme #load-data-button { background-color: #00aaff; }
+        .cosmic-theme #load-data-button:hover { background-color: #0077cc; }
+
+        .neon-theme #save-data-button { background-color: #ff00ff; color: #000; }
+        .neon-theme #save-data-button:hover { background-color: #cc00cc; }
+        .neon-theme #load-data-button { background-color: #00ffff; color: #000; }
+        .neon-theme #load-data-button:hover { background-color: #00cccc; }
+
+        #save-code-container {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: none;
+            word-break: break-all;
+            text-align: center;
+        }
+        #save-code-container h4 {
+            margin: 0;
+            font-size: 1em;
+            color: #555;
+        }
+        #saved-code {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007BFF;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .cosmic-theme #save-code-container {
+            background-color: #220044;
+            border-color: #4b0082;
+        }
+        .cosmic-theme #save-code-container h4 {
+            color: #b3a0d3;
+        }
+        .cosmic-theme #saved-code {
+            color: #a0d4ff;
+        }
+        
+        .neon-theme #save-code-container {
+            background-color: #1a1a2a;
+            border-color: #64ffda;
+        }
+        .neon-theme #save-code-container h4 {
+            color: #f0f0f0;
+        }
+        .neon-theme #saved-code {
+            color: #ff00ff;
+        }
     </style>
 </head>
 <body>
+
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
 <div class="container" id="main-container">
     <div id="theme-toggle-group">
@@ -555,6 +618,19 @@
     </div>
 
     <hr>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <button id="save-data-button" style="padding: 10px 20px; border: none; border-radius: 4px; color: #fff; cursor: pointer;">Guardar Sorteo</button>
+        <input type="text" id="load-code-input" placeholder="Ingresa tu código" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; width: 150px;">
+        <button id="load-data-button" style="padding: 10px 20px; border: none; border-radius: 4px; color: #fff; cursor: pointer;">Cargar Sorteo</button>
+    </div>
+    
+    <div id="save-code-container">
+        <h4>Tu sorteo ha sido guardado.</h4>
+        <p>¡Guarda este código para cargarlo en otro momento! 👉 <span id="saved-code"></span></p>
+    </div>
+
+    <hr>
 
     <div id="results-container">
         <h2>Participantes</h2>
@@ -573,6 +649,19 @@
 </div>
 
 <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQdtjwagG3pH2_MZAV2pKVq9HS7I-ufHk",
+      authDomain: "sorteo-24534.firebaseapp.com",
+      projectId: "sorteo-24534",
+      storageBucket: "sorteo-24534.firebasestorage.app",
+      messagingSenderId: "546018107328",
+      appId: "1:546018107328:web:4eb823a41e3cd70c29f225"
+    };
+
+    // Inicializa Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const numbersContainer = document.getElementById('numbers-container');
     const personNameInput = document.getElementById('person-name');
     const addButton = document.getElementById('add-button');
@@ -590,6 +679,13 @@
     const body = document.body;
     const mainContainer = document.getElementById('main-container');
     const numbersRangeLabel = document.getElementById('numbers-range-label');
+
+    // Nuevas variables para los botones de guardar/cargar
+    const saveButton = document.getElementById('save-data-button');
+    const loadButton = document.getElementById('load-data-button');
+    const loadCodeInput = document.getElementById('load-code-input');
+    const saveCodeContainer = document.getElementById('save-code-container');
+    const savedCodeElement = document.getElementById('saved-code');
 
     // Audio
     const countdownSound = new Audio('https://www.soundboard.com/mediafiles/3/30018_e2f694931a78c1874249a567634f195d.mp3');
@@ -652,6 +748,7 @@
             assignedNumbers = new Set(data.assignedNumbers);
             currentMaxNumber = data.currentMaxNumber;
 
+            numbersContainer.innerHTML = '';
             generateNumberBoxes(0, currentMaxNumber);
             updateParticipantsList();
         } else {
@@ -1014,6 +1111,65 @@
                 break;
         }
     }
+
+    // NUEVAS FUNCIONES PARA GUARDAR Y CARGAR CON FIREBASE
+    function generateCode() {
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    // Función para GUARDAR datos en Firebase
+    saveButton.addEventListener('click', async () => {
+        const code = generateCode();
+        const data = {
+            participants: allParticipants,
+            currentMaxNumber: currentMaxNumber
+        };
+        try {
+            await db.collection('sorteos').doc(code).set(data);
+            
+            // Muestra el código en la nueva sección
+            savedCodeElement.textContent = code;
+            saveCodeContainer.style.display = 'block';
+
+        } catch (e) {
+            console.error("Error al guardar el documento: ", e);
+            alert("Error al guardar el sorteo. Intenta de nuevo.");
+        }
+    });
+
+    // Función para CARGAR datos desde Firebase
+    loadButton.addEventListener('click', async () => {
+        const code = loadCodeInput.value.trim().toUpperCase();
+        if (code === '') {
+            alert('Por favor, ingresa un código.');
+            return;
+        }
+        try {
+            const doc = await db.collection('sorteos').doc(code).get();
+            if (doc.exists) {
+                const data = doc.data();
+                allParticipants = data.participants;
+                currentMaxNumber = data.currentMaxNumber;
+
+                assignedNumbers.clear();
+                allParticipants.forEach(p => p.numbers.forEach(num => assignedNumbers.add(num)));
+
+                // Limpiar y regenerar la interfaz
+                numbersContainer.innerHTML = '';
+                generateNumberBoxes(0, currentMaxNumber);
+                updateRangeLabel();
+                updateParticipantsList();
+                saveData();
+
+                alert('Sorteo cargado con éxito!');
+            } else {
+                alert('No se encontró ningún sorteo con ese código.');
+            }
+        } catch (e) {
+            console.error("Error al cargar el documento: ", e);
+            alert("Error al cargar el sorteo. Intenta de nuevo.");
+        }
+    });
 </script>
 
 </body>
