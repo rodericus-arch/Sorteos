@@ -721,13 +721,11 @@
     <div id="theme-toggle-group">
         <label for="theme-selector" style="font-weight: normal;">Seleccionar tema:</label>
         <select id="theme-selector">
-            <option value="default">Predeterminado</option>
-            <option value="cosmic">Cosmic</option>
-            <option value="neon">Neon Party</option>
-            <option value="pastel">Pastel Dreams</option>
+            <option value="pastel" selected>Pastel Dreams</option>
+            <option value="default">Clásico</option>
         </select>
     </div>
-    <h1>Sorteo Red Pilar</h1>
+    <h1>Red Pilar</h1>
 
     <div class="form-group">
         <label for="search-number">Buscar y resaltar número:</label>
@@ -915,7 +913,8 @@
             themeSelector.value = savedTheme;
             applyTheme(savedTheme);
         } else {
-            themeSelector.value = 'default';
+            themeSelector.value = 'pastel';
+            applyTheme('pastel');
         }
     }
 
