@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sorteo del Equipo Martin</title>
+    <title>Sorteo Red Pilar</title>
     <style>
         /* --- ESTILOS GENERALES (TEMA PREDETERMINADO) --- */
         body {
@@ -487,6 +487,115 @@
             color: #ff00ff;
             text-shadow: 0 0 10px #ff00ff;
         }
+        
+        /* --- ESTILOS TEMA PASTEL DREAMS --- */
+        body.pastel-theme {
+            background-color: #f7e1e6;
+            color: #5e548e;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        .container.pastel-theme {
+            background-color: #fff0f3;
+            box-shadow: 0 4px 15px rgba(181, 126, 220, 0.4);
+            border: 2px solid #b57edc;
+        }
+        .pastel-theme h1 {
+            color: #ff66a4;
+            text-shadow: 1px 1px 5px rgba(255, 102, 164, 0.5);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        .pastel-theme label {
+            color: #9381ff;
+        }
+        .pastel-theme input[type="text"] {
+            background-color: #fff8f8;
+            color: #5e548e;
+            border: 1px solid #b57edc;
+            box-shadow: inset 0 0 5px rgba(181, 126, 220, 0.2);
+        }
+        .pastel-theme #numbers-container {
+            background-color: #fef0f8;
+            border: 1px solid #b57edc;
+        }
+        .pastel-theme .number-box {
+            background-color: #f0e1ff;
+            color: #5e548e;
+            border: 1px solid #b57edc;
+        }
+        .pastel-theme .number-box:hover {
+            background-color: #c7b3e6;
+            color: #fff;
+        }
+        .pastel-theme .number-box.selected {
+            background-color: #ff66a4;
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 5px #ff66a4;
+        }
+        .pastel-theme .number-box.assigned {
+            background-color: #e0e0e0;
+            color: #a0a0a0;
+        }
+        .pastel-theme button {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .pastel-theme #add-button { background-color: #b57edc; }
+        .pastel-theme #add-button:hover { background-color: #a06ac9; }
+        .pastel-theme #sorteo-button { background-color: #4a91f2; }
+        .pastel-theme #sorteo-button:hover { background-color: #3b7ad6; }
+        .pastel-theme #clear-button { background-color: #ff8c42; }
+        .pastel-theme #clear-button:hover { background-color: #e67d35; }
+        .pastel-theme .add-numbers-group button, .pastel-theme .range-buttons button { background-color: #72b9e6; }
+        .pastel-theme .add-numbers-group button:hover, .pastel-theme .range-buttons button:hover { background-color: #61a9d4; }
+        .pastel-theme #results-container, .pastel-theme #history-container {
+            background-color: #fff8f8;
+            border: 1px solid #b57edc;
+        }
+        .pastel-theme .person-entry, .pastel-theme .history-entry {
+            border-bottom: 1px solid #e0c8ee;
+        }
+        .pastel-theme .person-name {
+            color: #4a91f2;
+        }
+        .pastel-theme .action-button {
+            color: #9381ff;
+        }
+        .pastel-theme .action-button:hover {
+            color: #ff66a4;
+        }
+        .pastel-theme .edit-mode input[type="text"] {
+            background-color: #fff0f3;
+            color: #5e548e;
+            border-color: #b57edc;
+        }
+        .pastel-theme .edit-mode .person-number-chip {
+            background-color: #e0c8ee;
+            color: #5e548e;
+        }
+        .pastel-theme .edit-mode .person-number-chip button {
+            color: #ff66a4;
+        }
+        .pastel-theme .edit-mode #add-number-btn { background-color: #b57edc; color: #fff; }
+        .pastel-theme .edit-mode #add-number-btn:hover { background-color: #a06ac9; }
+        .pastel-theme .edit-mode #update-name-btn { background-color: #ff66a4; color: #fff; }
+        .pastel-theme .edit-mode #update-name-btn:hover { background-color: #e65c92; }
+        .pastel-theme #ganador-container h2 {
+            color: #ff66a4;
+        }
+        .pastel-theme #ganador-nombre {
+            color: #b57edc;
+        }
+        .pastel-theme #ganador-numero {
+            color: #4a91f2;
+        }
+        .pastel-theme #countdown-timer {
+            color: #ff8c42;
+        }
+        .pastel-theme #theme-selector {
+            background-color: #fff0f3;
+            color: #5e548e;
+            border-color: #b57edc;
+        }
 
         #theme-toggle-group {
             margin-top: 0;
@@ -529,6 +638,11 @@
         .neon-theme #load-data-button { background-color: #00ffff; color: #000; }
         .neon-theme #load-data-button:hover { background-color: #00cccc; }
 
+        .pastel-theme #save-data-button { background-color: #b57edc; }
+        .pastel-theme #save-data-button:hover { background-color: #a06ac9; }
+        .pastel-theme #load-data-button { background-color: #72b9e6; }
+        .pastel-theme #load-data-button:hover { background-color: #61a9d4; }
+        
         #save-code-container {
             margin-top: 15px;
             padding: 10px;
@@ -572,6 +686,17 @@
         .neon-theme #saved-code {
             color: #ff00ff;
         }
+        
+        .pastel-theme #save-code-container {
+            background-color: #fff8f8;
+            border-color: #b57edc;
+        }
+        .pastel-theme #save-code-container h4 {
+            color: #5e548e;
+        }
+        .pastel-theme #saved-code {
+            color: #b57edc;
+        }
     </style>
 </head>
 <body>
@@ -586,9 +711,10 @@
             <option value="default">Predeterminado</option>
             <option value="cosmic">Cosmic</option>
             <option value="neon">Neon Party</option>
+            <option value="pastel">Pastel Dreams</option>
         </select>
     </div>
-    <h1>Sorteo del Equipo Martin</h1>
+    <h1>Sorteo Red Pilar</h1>
 
     <div class="form-group">
         <label for="person-name">Nombre de la persona:</label>
@@ -940,7 +1066,7 @@
         
         // Desplazar la vista al contenedor del sorteo
         ganadorContainer.style.display = 'block';
-        ganadorContainer.scrollIntoView({ behavior: 'smooth' });
+        ganadorContainer.scroll-to({ behavior: 'smooth' });
 
         ganadorNumero.textContent = '';
         ganadorNombre.textContent = '';
@@ -1108,6 +1234,10 @@
             case 'neon':
                 body.classList.add('neon-theme');
                 mainContainer.classList.add('neon-theme');
+                break;
+            case 'pastel':
+                body.classList.add('pastel-theme');
+                mainContainer.classList.add('pastel-theme');
                 break;
             default:
                 break;
