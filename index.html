@@ -618,6 +618,12 @@
             color: #64ffda;
             border-color: #64ffda;
         }
+        .pastel-theme #theme-selector {
+            background-color: #fff8f8;
+            color: #5e548e;
+            border-color: #b57edc;
+        }
+
         .hide-on-edit-mode {
             display: none;
         }
@@ -697,6 +703,13 @@
         .pastel-theme #saved-code {
             color: #b57edc;
         }
+
+        /* --- NUEVO ESTILO PARA EL BORDE DE RESALTE --- */
+        .number-box.resaltado {
+            border: 3px solid #ff5722; /* Color naranja, puedes cambiarlo */
+            transform: scale(1.1);
+        }
+        /* Fin de los nuevos estilos */
     </style>
 </head>
 <body>
@@ -715,6 +728,11 @@
         </select>
     </div>
     <h1>Sorteo Red Pilar</h1>
+
+    <div class="form-group">
+        <label for="search-number">Buscar y resaltar número:</label>
+        <input type="text" id="search-number" placeholder="Ej: 02, 102...">
+    </div>
 
     <div class="form-group">
         <label for="person-name">Nombre de la persona:</label>
@@ -760,6 +778,9 @@
 
     <div id="results-container">
         <h2>Participantes</h2>
+        <div class="form-group">
+            <input type="text" id="search-person" placeholder="Busca por nombre o número...">
+        </div>
         <div id="results-list">
             </div>
     </div>
@@ -811,6 +832,12 @@
     const loadCodeInput = document.getElementById('load-code-input');
     const saveCodeContainer = document.getElementById('save-code-container');
     const savedCodeElement = document.getElementById('saved-code');
+    
+    // Campo de búsqueda de números
+    const searchNumberInput = document.getElementById('search-number');
+    // Nuevo campo de búsqueda de participantes
+    const searchPersonInput = document.getElementById('search-person');
+
 
     const countdownSound = new Audio('https://www.soundboard.com/mediafiles/3/30018_e2f694931a78c1874249a567634f195d.mp3');
     const spinSound = new Audio('https://www.soundboard.com/mediafiles/1/18167_nfs_prostreet_rev_4.mp3');
@@ -958,6 +985,7 @@
         
         saveData();
         updateParticipantsList();
+        filtrarParticipantes(); // Llama a la función de filtro después de actualizar
     }
 
 
@@ -1025,6 +1053,7 @@
             allParticipants.splice(index, 1);
             saveData();
             updateParticipantsList();
+            filtrarParticipantes(); // Llama a la función de filtro después de eliminar
         }
     }
 
@@ -1055,6 +1084,7 @@
         
         saveData();
         updateParticipantsList();
+        filtrarParticipantes(); // Llama a la función de filtro después de agregar un participante
     });
 
     sorteoButton.addEventListener('click', () => {
@@ -1066,7 +1096,7 @@
         
         // Desplazar la vista al contenedor del sorteo
         ganadorContainer.style.display = 'block';
-        ganadorContainer.scroll-to({ behavior: 'smooth' });
+        ganadorContainer.scrollIntoView({ behavior: 'smooth' });
 
         ganadorNumero.textContent = '';
         ganadorNombre.textContent = '';
@@ -1136,6 +1166,8 @@
             currentRaffleCode = null; // Reinicia el código del sorteo
             loadCodeInput.value = ''; // Borra el código del input
             saveCodeContainer.style.display = 'none'; // Oculta el contenedor del código
+            searchNumberInput.value = ''; // Limpia el campo de búsqueda
+            searchPersonInput.value = ''; // Limpia el campo de búsqueda de personas
 
             document.querySelectorAll('.number-box').forEach(box => {
                 box.remove();
@@ -1284,11 +1316,13 @@
                 allParticipants = data.participants;
                 currentMaxNumber = data.currentMaxNumber;
 
-                assignedNumbers.clear();
-                allParticipants.forEach(p => p.numbers.forEach(num => assignedNumbers.add(num)));
-
+                // Limpia y regenera la lista de números y participantes
                 numbersContainer.innerHTML = '';
                 generateNumberBoxes(0, currentMaxNumber);
+
+                assignedNumbers.clear();
+                allParticipants.forEach(p => p.numbers.forEach(num => assignedNumbers.add(num)));
+                
                 updateRangeLabel();
                 updateParticipantsList();
                 saveData();
@@ -1304,6 +1338,48 @@
             alert("Error al cargar el sorteo. Intenta de nuevo.");
         }
     });
+    
+    // Función para buscar y resaltar un número en el marcador
+    function buscarNumero() {
+        const numeroBuscado = searchNumberInput.value.trim();
+        const todosLosNumeros = document.querySelectorAll('.number-box');
+
+        todosLosNumeros.forEach(box => {
+            box.classList.remove('resaltado');
+        });
+
+        if (numeroBuscado !== '') {
+            const numeroEncontrado = document.querySelector(`.number-box[data-number="${parseInt(numeroBuscado)}"]`);
+            
+            if (numeroEncontrado) {
+                numeroEncontrado.classList.add('resaltado');
+                numeroEncontrado.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }
+
+    // Función para filtrar la lista de participantes
+    function filtrarParticipantes() {
+        const filtro = searchPersonInput.value.trim().toLowerCase();
+        const participantes = document.querySelectorAll('.person-entry');
+
+        participantes.forEach(participante => {
+            const nombre = participante.querySelector('.person-name').textContent.toLowerCase();
+            const numeros = participante.querySelector('.person-numbers').textContent.toLowerCase();
+
+            // Muestra el participante si el filtro coincide con el nombre o los números
+            if (nombre.includes(filtro) || numeros.includes(filtro)) {
+                participante.style.display = 'flex';
+            } else {
+                participante.style.display = 'none';
+            }
+        });
+    }
+
+    // Agrega "escuchadores" a los campos de búsqueda
+    searchNumberInput.addEventListener('input', buscarNumero);
+    searchPersonInput.addEventListener('input', filtrarParticipantes);
+
 </script>
 
 </body>
